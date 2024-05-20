@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enlace Temporal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .container {
+            text-align: center;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+        .popup-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .popup-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Generar Enlace Temporal</h1>
+        <input type="text" id="mediafireUrl" placeholder="Pegue aquí el enlace">
+        <button onclick="generateTemporaryLink()">Camuflar</button>
+    </div>
+
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <span class="popup-close" onclick="closePopup()">&times;</span>
+            <p>Enlace temporal generado:</p>
+            <a id="temporaryLink" href="#" target="_blank"></a>
+        </div>
+    </div>
+
+    <script>
+        function generateTemporaryLink() {
+            const mediafireUrl = document.getElementById('mediafireUrl').value;
+            const expirationTime = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+            const tempLink = `${window.location.origin}/download?url=${encodeURIComponent(mediafireUrl)}&exp=${expirationTime}`;
+            
+            document.getElementById('temporaryLink').href = tempLink;
+            document.getElementById('temporaryLink').textContent = tempLink;
+            document.getElementById('popup').style.display = 'flex';
+        }
+
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
+        }
+
+        function validateAndRedirect() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const mediafireUrl = urlParams.get('url');
+            const expirationTime = parseInt(urlParams.get('exp'), 10);
+
+            if (Date.now() > expirationTime) {
+                document.body.innerHTML = '<h1>Enlace expirado</h1>';
+            } else {
+                window.location.href = mediafireUrl;
+            }
+        }
+
+        // Check if it's the download page
+        if (window.location.pathname === '/download') {
+            validateAndRedirect();
+        }
+    </script>
+</body>
+</html>
