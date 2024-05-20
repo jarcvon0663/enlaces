@@ -11,8 +11,8 @@ let links = {};
 app.post('/api/create-link', (req, res) => {
     const { originalUrl } = req.body;
     const id = uuidv4();
-    const tempLink = `https://your-vercel-app.vercel.app/download/${id}`;
-    links[id] = { url: originalUrl, expiry: Date.now() + 24 * 60 * 60 * 1000 }; // 24 hours
+    const tempLink = `https://${req.headers.host}/download/${id}`;
+    links[id] = { url: originalUrl, expiry: Date.now() + 24 * 60 * 60 * 1000 }; // 24 horas
 
     res.json({ link: tempLink });
 });
